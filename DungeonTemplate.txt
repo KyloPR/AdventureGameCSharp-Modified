@@ -1,0 +1,36 @@
+5
+7
+4
+6
+1
+1
+3
+5
+3
+1
+4
+3
+#######
+#L....#
+#.#.#.#
+#C..K.#
+#..G..E
+1|Entrance - You feel a breeze
+0|A dim hallway
+1|A quiet chamber
+0|A narrow passage
+1|A dusty corner
+0|A cracked floor
+1|A torch-lit room
+0|A cold stone hall
+1|A suspicious silence
+0|A dripping ceiling
+1|A warm draft
+0|A strange echo
+1|A glowing rune
+0|A deep rumble
+1|A faint humming
+0|A mossy stone path
+1|A warm flicker of light
+0|A distant metallic clang
+1|A soft whisper in the dark

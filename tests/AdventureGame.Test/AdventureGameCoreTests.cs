@@ -216,6 +216,7 @@ namespace AdventureGame.Tests
 
             var GO_NORTH = Const(g, "GO_NORTH");
             var GO_SOUTH = Const(g, "GO_SOUTH");
+            var GO_EAST = Const(g, "GO_EAST");
             var GET_KEY  = Const(g, "GET_KEY");
             var OPEN_CHEST = Const(g, "OPEN_CHEST");
 
@@ -225,8 +226,53 @@ namespace AdventureGame.Tests
             Call(g, "ProcessInput", GO_SOUTH);
 
             var output = CaptureOut(() => Call(g, "ProcessInput", OPEN_CHEST));
-            Assert.Contains("You got the treasure!", output);
+            Assert.Contains("You opened the treasure chest!", output);
+            Assert.Contains("The Grue has been alerted!", output);
             Assert.True(GetField<bool>(g, "isChestOpen"));
+            Assert.True(GetField<bool>(g, "isGruePursuing"));
+            Assert.False((bool)Call(g, "IsGameOver")!);
+            
+            // Now move to the exit (Room 4) to win
+            Call(g, "ProcessInput", GO_EAST);
+            Call(g, "UpdateGameState");
+            var over = (bool)Call(g, "IsGameOver")!;
+            Assert.True(over);
+            Assert.True(GetField<bool>(g, "hasReachedExit"));
+        }
+
+        [Fact]
+        public void Exit_Room_Leads_To_Win_After_Opening_Chest()
+        {
+            var g = new AdventureGame();
+            Call(g, "Init");
+
+            var GO_NORTH = Const(g, "GO_NORTH");
+            var GO_SOUTH = Const(g, "GO_SOUTH");
+            var GO_EAST = Const(g, "GO_EAST");
+            var GET_KEY  = Const(g, "GET_KEY");
+            var OPEN_CHEST = Const(g, "OPEN_CHEST");
+
+            // Get key and open chest
+            Call(g, "ProcessInput", GO_NORTH);
+            Call(g, "ProcessInput", GET_KEY);
+            Call(g, "ProcessInput", GO_SOUTH);
+            Call(g, "ProcessInput", OPEN_CHEST);
+            
+            // Not at exit yet, should not be game over
+            Assert.False((bool)Call(g, "IsGameOver")!);
+            
+            // Move to exit
+            Call(g, "ProcessInput", GO_EAST);
+            Assert.True(GetField<bool>(g, "isChestOpen"));
+            
+            // Before UpdateGameState, hasReachedExit should still be false
+            Assert.False(GetField<bool>(g, "hasReachedExit"));
+            
+            // Call UpdateGameState to check exit
+            Call(g, "UpdateGameState");
+            
+            // After UpdateGameState, hasReachedExit should be true
+            Assert.True(GetField<bool>(g, "hasReachedExit"));
             Assert.True((bool)Call(g, "IsGameOver")!);
         }
 
@@ -306,8 +352,8 @@ namespace AdventureGame.Tests
         [Fact]
         public void Start_FullHappyPath_WinByTreasure()
         {
-            // Inputs: W (to Room1), L, K, S (back to Room3), O (open chest)
-            var inputs = string.Join(Environment.NewLine, new[] { "W", "L", "K", "S", "O" }) + Environment.NewLine;
+            // Inputs: W (to Room1), L, K, S (back to Room3), O (open chest), D (to exit Room4)
+            var inputs = string.Join(Environment.NewLine, new[] { "W", "L", "K", "S", "O", "D" }) + Environment.NewLine;
             Console.SetIn(new StringReader(inputs));
 
             var outWriter = new StringWriter();
@@ -330,8 +376,9 @@ namespace AdventureGame.Tests
             Assert.Contains("Room 1", output);          // after going north
             Assert.Contains("You got the lamp!", output);
             Assert.Contains("You got the key!", output);
-            Assert.Contains("You got the treasure!", output);
-            Assert.Contains("Game Over!", output);
+            Assert.Contains("You opened the treasure chest!", output);
+            Assert.Contains("The Grue has been alerted!", output);
+            Assert.Contains("You escaped the dungeon!", output);
         }
     }
 }

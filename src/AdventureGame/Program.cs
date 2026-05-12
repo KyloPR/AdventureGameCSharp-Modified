@@ -1,10 +1,12 @@
-﻿namespace AdventureGame;
+﻿using AdventureGame;
+
+namespace AdventureGame;
 
 public class Program
 {
-	public static void Main()
-	{
-		var game = new AdventureGame();
-		game.Start();
-	}
+    public static void Main(string[] args)
+    {
+        var game = new AdventureGame();
+        game.ShowMainMenu();
+    }
 }
